@@ -13,6 +13,7 @@ class RocksdbConan(ConanFile):
     generators = "cmake"
     build_policy = "missing"
     _cmake = None
+    generators = "cmake", "cmake_find_package"
 
     options = {
         "shared": [True, False],
@@ -21,18 +22,18 @@ class RocksdbConan(ConanFile):
 
     default_options = {
         "shared": False,
-        "fPIC": False,
+        "fPIC": True,
     }
 
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
     requires = (
-        "gflags/2.2.2@bincrafters/stable",
+        # TODO snappy, zstandard
+        "gflags/2.2.2",
         "zlib/1.2.11@conan/stable",
         "bzip2/1.0.6@conan/stable",
-        "lz4/1.8.3@bincrafters/stable"
-        # TODO snappy, zstandard
+        "lz4/1.9.2"
     )
 
     def config_options(self):
@@ -55,12 +56,6 @@ class RocksdbConan(ConanFile):
             endif ()
             include(CMakeDependentOption)
             ''')
-
-        tools.replace_in_file(
-            os.path.join(self.source_folder, self._source_subfolder, "CMakeLists.txt"),
-            "find_package(gflags REQUIRED)",
-            "find_package(GFLAGS REQUIRED)"
-        )
 
     def _configure_cmake(self):
         if not self._cmake:
