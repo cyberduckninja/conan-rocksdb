@@ -60,6 +60,7 @@ class RocksdbConan(ConanFile):
     def _configure_cmake(self):
         if not self._cmake:
             self._cmake = CMake(self)
+            self._cmake.definitions["WITH_BENCHMARK_TOOLS"] = False  # example
             self._cmake.configure(source_dir=self._source_subfolder)
         return self._cmake
 
@@ -68,15 +69,15 @@ class RocksdbConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy("LICENSE.Apache", src=self.subfolder, keep_path=False)
-        self.copy("LICENSE.leveldb", src=self.subfolder, keep_path=False)
+        self.copy("LICENSE.Apache", src=self._source_subfolder, keep_path=False)
+        self.copy("LICENSE.leveldb", src=self._source_subfolder, keep_path=False)
 
-        self.copy("*.h", dst="include", src=("%s/include" % self.subfolder))
+        self.copy("*.h", dst="include", src=("%s/include" % self._source_subfolder))
 
         if self.options.shared:
-            self.copy("librocksdb.so", dst="lib", src=self.subfolder, keep_path=False)
+            self.copy("librocksdb.so", dst="lib", src=self._source_subfolder, keep_path=False)
         else:
-            self.copy("librocksdb.a", dst="lib", src=self.subfolder, keep_path=False)
+            self.copy("librocksdb.a", dst="lib", src=self._source_subfolder, keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ["rocksdb"]
